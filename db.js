@@ -4,7 +4,9 @@ const { Pool } = require('pg');
 // Configuração que funciona tanto no seu PC quanto no Render
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 // Teste de conexão (opcional, mas bom pra debug)
