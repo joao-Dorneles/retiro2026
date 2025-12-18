@@ -12,8 +12,8 @@ const app = express();
 
 // --- CONFIGURAÇÃO DE PREÇO E LOTE ---
 const DATA_FIM_LOTE_1 = new Date('2025-01-20T23:59:59');
-const PRECO_LOTE_1 = 100.00;
-const PRECO_LOTE_2 = 150.00;
+const PRECO_LOTE_1 = 1.00;
+const PRECO_LOTE_2 = 1.00;
 
 function getPrecoAtual() {
     const hoje = new Date();
@@ -138,7 +138,7 @@ app.post('/inscrever', async (req, res) => {
             },
             external_reference: idInscrito.toString(),
             // IMPORTANTE: Troque 'seu-app' pela URL real do Render quando tiver
-            notification_url: `${process.env.BASE_URL_RENDER || 'https://seu-app.onrender.com'}/webhook/pagamento`
+            notification_url: `${process.env.BASE_URL_RENDER || 'https://inscricaoretiro2026.onrender.com'}/webhook/pagamento`
         };
 
         const requestOptions = { idempotencyKey: crypto.randomUUID() };
