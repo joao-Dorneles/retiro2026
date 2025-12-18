@@ -14,6 +14,9 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f4f7f6;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         /* --- TOPO (HERO) --- */
@@ -49,28 +52,26 @@
         .btn-scroll:hover { background: #764ba2; color: white; }
 
 
-        /* --- GALERIA DE MÍDIA (CSS ATUALIZADO) --- */
+        /* --- GALERIA DE MÍDIA --- */
         .media-section {
             padding: 50px 20px;
             text-align: center;
-            max-width: 1200px; /* Aumentei um pouco a largura máxima */
+            max-width: 1200px;
             margin: 0 auto;
         }
         .media-section h2 { margin-bottom: 30px; color: #764ba2; }
         
         .media-grid {
             display: grid;
-            /* Cria colunas que se adaptam, com largura mínima de 280px */
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
         }
         
-        /* Estilo do "cartão" da mídia */
         .media-item {
             background: #000;
-            height: 250px; /* Altura fixa para todas as caixas ficarem iguais */
+            height: 250px;
             border-radius: 12px;
-            overflow: hidden; /* Corta o que passar do tamanho */
+            overflow: hidden;
             position: relative;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
@@ -80,22 +81,20 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
         
-        /* FORÇA IMAGENS E VÍDEOS A PREENCHEREM O ESPAÇO PERFEITAMENTE */
         .media-item img, 
         .media-item video { 
             width: 100%; 
             height: 100%; 
-            object-fit: cover; /* O SEGREDO: Corta as bordas sem esticar! */
+            object-fit: cover;
             display: block;
         }
 
-        /* Mãozinha nas fotos para indicar clique */
         .media-item img.zoomable { cursor: pointer; }
         
         .empty-msg { color: #999; font-style: italic; background: #eee; padding: 20px; border-radius: 10px; }
 
 
-        /* --- FORMULÁRIO (Continua igual) --- */
+        /* --- FORMULÁRIO --- */
         .registration-section {
             padding: 80px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -126,12 +125,11 @@
         .btn-submit:hover { transform: translateY(-2px); }
         @media (max-width: 600px) { .hero-banner h1 { font-size: 2.5rem; } }
 
-        /* --- CSS DO MODAL (A TELA PRETA QUE ABRE A FOTO) --- */
+        /* --- MODAL --- */
         .modal {
-            display: none; /* Escondido por padrão */
-            position: fixed; z-index: 999; 
+            display: none; position: fixed; z-index: 999; 
             padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.9); /* Fundo preto transparente */
+            background-color: rgba(0,0,0,0.9);
         }
         .modal-content {
             margin: auto; display: block; width: 80%; max-width: 900px; max-height: 80vh; object-fit: contain;
@@ -142,6 +140,29 @@
         }
         .close-modal:hover { color: #bbb; }
         @keyframes zoom { from {transform:scale(0)} to {transform:scale(1)} }
+
+        /* --- FOOTER (NOVO) --- */
+        footer {
+            background-color: #1a1a1a;
+            color: #ccc;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: auto; /* Empurra o footer para o final se a página for curta */
+            font-size: 14px;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+        footer strong {
+            color: #b794f4; /* Roxo claro para destacar os nomes */
+            font-weight: 600;
+        }
+        footer .devs {
+            margin-top: 15px;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        footer i { color: #e25555; } /* Coração vermelho */
     </style>
 </head>
 <body>
@@ -237,6 +258,14 @@
             <div style="text-align: center; margin-top: 30px;"><a href="/login" style="color: #ccc; text-decoration: none; font-size: 12px;"><i class="fas fa-lock"></i> Área Admin</a></div>
         </div>
     </section>
+
+    <footer>
+        <p>Retiro Jovem 2025 &copy; Todos os direitos reservados.</p>
+        <p class="devs">
+            Desenvolvido com <i class="fas fa-heart"></i> por <br>
+            <strong>Luis Diogo</strong> e <strong>João Dorneles</strong>
+        </p>
+    </footer>
 
     <div id="imageModal" class="modal">
         <span class="close-modal">&times;</span>

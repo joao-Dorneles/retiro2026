@@ -12,8 +12,8 @@ const app = express();
 
 // --- CONFIGURAÇÃO DE PREÇO E LOTE ---
 const DATA_FIM_LOTE_1 = new Date('2025-01-20T23:59:59');
-const PRECO_LOTE_1 = 1.00;
-const PRECO_LOTE_2 = 1.00;
+const PRECO_LOTE_1 = 100.00;
+const PRECO_LOTE_2 = 100.00;
 
 function getPrecoAtual() {
     const hoje = new Date();
