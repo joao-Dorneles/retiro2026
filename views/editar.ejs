@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Inscrição</title>
+    <style>
+        body { font-family: sans-serif; background: #eee; padding: 50px; display: flex; justify-content: center; }
+        .card { background: white; padding: 30px; width: 400px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        label { font-weight: bold; font-size: 14px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; margin-top: 10px;}
+        .btn-salvar { background: #28a745; }
+        .btn-voltar { background: #6c757d; display: block; text-align: center; text-decoration: none; padding: 10px; margin-top: 10px; color: white; border-radius: 4px;}
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Editar Inscrição #<%= inscrito.id %></h2>
+    
+    <form action="/admin/editar/<%= inscrito.id %>" method="POST">
+        
+        <label>Nome Completo</label>
+        <input type="text" name="nome" value="<%= inscrito.nome %>" required>
+
+        <label>Telefone</label>
+        <input type="text" name="telefone" value="<%= inscrito.telefone %>" required>
+
+        <label>Congregação</label>
+        <select name="congregacao">
+            <option value="Sede" <%= inscrito.congregacao === 'Sede' ? 'selected' : '' %>>Sede</option>
+            <option value="Betel" <%= inscrito.congregacao === 'Betel' ? 'selected' : '' %>>Betel</option>
+            <option value="Maranata" <%= inscrito.congregacao === 'Maranata' ? 'selected' : '' %>>Maranata</option>
+            <option value="Outra" <%= inscrito.congregacao === 'Outra' ? 'selected' : '' %>>Outra</option>
+        </select>
+
+        <label>Status do Pagamento</label>
+        <select name="status" style="background: #fff3cd;">
+            <option value="Pendente" <%= inscrito.status === 'Pendente' ? 'selected' : '' %>>Pendente</option>
+            <option value="Pago" <%= inscrito.status === 'Pago' ? 'selected' : '' %>>Pago (Confirmado)</option>
+        </select>
+
+        <label>CPF</label>
+        <input type="text" name="cpf" value="<%= inscrito.cpf %>" required>
+
+        <label>Sexo</label>
+        <select name="sexo">
+            <option value="Masculino" <%= inscrito.sexo === 'Masculino' ? 'selected' : '' %>>Masculino</option>
+            <option value="Feminino" <%= inscrito.sexo === 'Feminino' ? 'selected' : '' %>>Feminino</option>
+        </select>
+
+        <button type="submit" class="btn-salvar">Salvar Alterações</button>
+    </form>
+    
+    <a href="/admin" class="btn-voltar">Cancelar</a>
+</div>
+
+</body>
+</html>

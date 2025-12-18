@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Retiro</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 30px; border-radius: 10px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        /* Área do QR Code */
+        .qr-area { margin: 20px 0; border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: #fff; }
+        .qr-img { width: 200px; height: 200px; object-fit: contain; }
+        
+        .copia-cola { width: 100%; font-size: 12px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: #eee; word-break: break-all; margin-top: 10px;}
+        
+        /* Botão Copiar */
+        .btn-copy { background: #009ee3; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; margin-top: 5px; font-weight: bold;}
+        
+        /* Ticket Pago */
+        .pago-box { border: 2px solid green; background: #eaffea; padding: 20px; border-radius: 8px; }
+        .check-icon { font-size: 50px; color: green; display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h3>Retiro Jovem 2025</h3>
+        <p>Participante: <strong><%= dados.nome %></strong></p>
+
+        <% if (dados.status === 'Pago') { %>
+            
+            <div class="pago-box">
+                <span class="check-icon">✅</span>
+                <h2>Pagamento Confirmado!</h2>
+                <p>Sua inscrição está garantida.</p>
+                <p>Congregação: <%= dados.congregacao %></p>
+                <hr>
+                <small>Tire um print desta tela.</small>
+                <br><br>
+                <button onclick="window.print()" style="padding:10px;">Salvar Comprovante</button>
+            </div>
+
+        <% } else { %>
+
+            <div id="area-pagamento">
+                <p style="color: #d9534f;">Aguardando Pagamento...</p>
+                <h2>R$ 1,00</h2>
+                
+                <% if (dados.qr_code_base64) { %>
+                    <div class="qr-area">
+                        <p style="font-size: 14px; color: #666;">Abra o App do seu banco e escaneie:</p>
+                        <img src="data:image/png;base64,<%= dados.qr_code_base64 %>" class="qr-img" />
+                    </div>
+
+                    <p style="font-size: 14px;">Ou use o Pix Copia e Cola:</p>
+                    <textarea id="pixCode" class="copia-cola" rows="4" readonly><%= dados.qr_code %></textarea>
+                    <button class="btn-copy" onclick="copiarPix()">Copiar Código PIX</button>
+                <% } else { %>
+                    <p>Erro ao gerar QR Code. Verifique o Token ou tente novamente.</p>
+                <% } %>
+                
+                <div style="margin-top: 20px;">
+                    <img src="https://cdnjs.cloudflare.com/ajax/libs/gallericons/2.2.5/svg/refresh.svg" width="20" style="vertical-align: middle; animation: spin 2s linear infinite;">
+                    <span style="font-size: 12px; color: #666;">Verificando pagamento automaticamente...</span>
+                </div>
+            </div>
+
+            <script>
+                // Função para copiar o código
+                function copiarPix() {
+                    var copyText = document.getElementById("pixCode");
+                    copyText.select();
+                    document.execCommand("copy");
+                    alert("Código PIX copiado!");
+                }
+
+                // Função que checa se pagou a cada 5 segundos
+                const idInscrito = "<%= dados.id %>";
+                
+                setInterval(() => {
+                    fetch(`/api/check-status/${idInscrito}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'Pago') {
+                                window.location.reload(); // Recarrega para mostrar o Ticket Verde!
+                            }
+                        })
+                        .catch(err => console.error(err));
+                }, 5000); // 5000ms = 5 segundos
+            </script>
+            
+            <style>
+                @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+            </style>
+
+        <% } %>
+
+        <br>
+        <a href="/" style="font-size:12px; color: #999;">Voltar ao início</a>
+    </div>
+
+</body>
+</html>

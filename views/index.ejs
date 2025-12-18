@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retiro Jovem 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        /* --- TOPO (HERO) --- */
+        .hero-banner {
+            background: linear-gradient(to bottom, rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.8)), 
+                        url('https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1920&auto=format&fit=crop') center/cover fixed;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .hero-banner h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero-banner p { font-size: 1.2rem; font-weight: 300; margin-bottom: 30px; }
+
+        .btn-scroll {
+            padding: 12px 30px; background: white; color: #764ba2;
+            text-decoration: none; font-weight: bold; border-radius: 30px;
+            transition: all 0.3s;
+        }
+        .btn-scroll:hover { background: #764ba2; color: white; }
+
+
+        /* --- GALERIA DE MÍDIA (CSS ATUALIZADO) --- */
+        .media-section {
+            padding: 50px 20px;
+            text-align: center;
+            max-width: 1200px; /* Aumentei um pouco a largura máxima */
+            margin: 0 auto;
+        }
+        .media-section h2 { margin-bottom: 30px; color: #764ba2; }
+        
+        .media-grid {
+            display: grid;
+            /* Cria colunas que se adaptam, com largura mínima de 280px */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        /* Estilo do "cartão" da mídia */
+        .media-item {
+            background: #000;
+            height: 250px; /* Altura fixa para todas as caixas ficarem iguais */
+            border-radius: 12px;
+            overflow: hidden; /* Corta o que passar do tamanho */
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .media-item:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        /* FORÇA IMAGENS E VÍDEOS A PREENCHEREM O ESPAÇO PERFEITAMENTE */
+        .media-item img, 
+        .media-item video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* O SEGREDO: Corta as bordas sem esticar! */
+            display: block;
+        }
+
+        /* Mãozinha nas fotos para indicar clique */
+        .media-item img.zoomable { cursor: pointer; }
+        
+        .empty-msg { color: #999; font-style: italic; background: #eee; padding: 20px; border-radius: 10px; }
+
+
+        /* --- FORMULÁRIO (Continua igual) --- */
+        .registration-section {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .form-container {
+            background: white; width: 100%; max-width: 480px;
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            padding: 40px; text-align: left;
+        }
+        .form-container h2 { text-align: center; color: #333; margin-bottom: 25px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 14px; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
+        input, select {
+            width: 100%; padding: 15px 15px 15px 45px; border: 2px solid #eee; border-radius: 10px;
+            font-size: 15px; font-family: 'Poppins', sans-serif; transition: all 0.3s; background: #f9f9f9;
+        }
+        input:focus, select:focus {
+            border-color: #764ba2; background: white; outline: none; box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+        }
+        .btn-submit {
+            width: 100%; padding: 16px; background: linear-gradient(to right, #667eea, #764ba2);
+            color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; transition: transform 0.2s; margin-top: 10px;
+        }
+        .btn-submit:hover { transform: translateY(-2px); }
+        @media (max-width: 600px) { .hero-banner h1 { font-size: 2.5rem; } }
+
+        /* --- CSS DO MODAL (A TELA PRETA QUE ABRE A FOTO) --- */
+        .modal {
+            display: none; /* Escondido por padrão */
+            position: fixed; z-index: 999; 
+            padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.9); /* Fundo preto transparente */
+        }
+        .modal-content {
+            margin: auto; display: block; width: 80%; max-width: 900px; max-height: 80vh; object-fit: contain;
+            animation: zoom 0.6s;
+        }
+        .close-modal {
+            position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer;
+        }
+        .close-modal:hover { color: #bbb; }
+        @keyframes zoom { from {transform:scale(0)} to {transform:scale(1)} }
+    </style>
+</head>
+<body>
+
+    <header class="hero-banner">
+        <h1>Retiro Jovem 2025</h1>
+        <p>Dia 13 a 18 de Janeiro</p>
+        
+        <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid white;">
+            🔥 <strong>1º Lote:</strong> R$ <%= preco %>,00 (Até 20/Jan)
+        </div>
+
+        <a href="#formulario" class="btn-scroll">Garantir vaga no 1º Lote</a>
+    </header>
+
+    <section class="media-section">
+        <h2>Nossos Melhores Momentos</h2>
+        
+        <% if (!galeria || galeria.length === 0) { %>
+            <div class="empty-msg">
+                <i class="fas fa-camera"></i> Nenhuma foto adicionada ainda.
+               
+            </div>
+        <% } else { %>
+            <div class="media-grid">
+                <% galeria.forEach(function(item) { %>
+                    <div class="media-item">
+                        <% if (item.tipo === 'foto') { %>
+                            <img src="<%= item.url %>" alt="<%= item.titulo %>" class="zoomable">
+                        <% } else { %>
+                            <video controls>
+                                <source src="<%= item.url %>" type="video/mp4">
+                            </video>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </section>
+
+    <section class="registration-section" id="formulario">
+        <div class="form-container">
+            <h2>Faça sua Inscrição</h2>
+          <form action="/inscrever" method="POST">
+                <div class="input-group">
+                    <label>Nome Completo</label>
+                    <div class="input-wrapper"><i class="fas fa-user"></i><input type="text" name="nome" placeholder="Seu nome aqui" required></div>
+                </div>
+
+                <div class="input-group">
+                    <label>CPF (Apenas números)</label>
+                    <div class="input-wrapper"><i class="fas fa-id-card"></i>
+                        <input type="text" name="cpf" placeholder="000.000.000-00" required maxlength="14">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Sexo (Para divisão de quartos)</label>
+                    <div class="input-wrapper"><i class="fas fa-venus-mars"></i>
+                        <select name="sexo" required>
+                            <option value="">Selecione...</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>WhatsApp</label>
+                    <div class="input-wrapper"><i class="fab fa-whatsapp"></i><input type="text" name="telefone" placeholder="(99) 99999-9999" required></div>
+                </div>
+
+                <div class="input-group">
+                    <label>Congregação</label>
+                    <div class="input-wrapper"><i class="fas fa-church"></i>
+                        <select name="congregacao" required>
+                            <option value="">Selecione sua igreja...</option>
+                            <option value="Sede">Sede</option>
+                            <option value="Betel">Betel</option>
+                            <option value="Maranata">Maranata</option>
+                            <option value="Outra">Outra / Visitante</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Inscrever-se <span style="font-weight: 300;">| R$ <%= preco %>,00</span>
+                </button>
+                <p style="text-align: center; font-size: 12px; margin-top: 10px; color: #666;">
+                    *Valor sujeito a alteração após 20/01.
+                </p>
+            </form>
+            <div style="text-align: center; margin-top: 30px;"><a href="/login" style="color: #ccc; text-decoration: none; font-size: 12px;"><i class="fas fa-lock"></i> Área Admin</a></div>
+        </div>
+    </section>
+
+    <div id="imageModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="imgExpanded">
+    </div>
+
+    <script>
+        // Pega os elementos
+        var modal = document.getElementById("imageModal");
+        var modalImg = document.getElementById("imgExpanded");
+        var span = document.getElementsByClassName("close-modal")[0];
+
+        // Pega todas as imagens que têm a classe 'zoomable'
+        var images = document.querySelectorAll('.zoomable');
+
+        // Adiciona o clique em cada uma delas
+        images.forEach(img => {
+            img.onclick = function(){
+                modal.style.display = "block";
+                modalImg.src = this.src; // Pega o link da imagem clicada e põe no modal
+            }
+        });
+
+        // Botão de fechar (X)
+        span.onclick = function() { modal.style.display = "none"; }
+
+        // Fechar se clicar fora da imagem (no fundo preto)
+        modal.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
