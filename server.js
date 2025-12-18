@@ -13,7 +13,7 @@ const app = express();
 // --- CONFIGURAÇÃO DE PREÇO E LOTE ---
 const DATA_FIM_LOTE_1 = new Date('2025-01-20T23:59:59');
 const PRECO_LOTE_1 = 100.00;
-const PRECO_LOTE_2 = 100.00;
+const PRECO_LOTE_2 = 150.00;
 
 function getPrecoAtual() {
     const hoje = new Date();
@@ -105,14 +105,14 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-// INSCRIÇÃO (Lógica adaptada para Postgres)
+// INSCRIÇÃO ONLINE (Público - Via Site)
 app.post('/inscrever', async (req, res) => {
     const { nome, cpf, sexo, congregacao, telefone } = req.body;
     const valorRetiro = getPrecoAtual();
-    const emailPagador = 'participante@retiro.com'; 
+    const emailPagador = 'participante@retiro.com';
 
     try {
-        // 1. Inserir no Banco e retornar o ID (Postgres precisa do RETURNING id)
+        // 1. Inserir no Banco e retornar o ID
         const insertQuery = `
             INSERT INTO inscricoes (nome, cpf, sexo, congregacao, telefone, valor_pago) 
             VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
@@ -129,28 +129,27 @@ app.post('/inscrever', async (req, res) => {
         const payment = new Payment(client);
         const body = {
             transaction_amount: valorRetiro,
-            description: `Inscrição Retiro (${sexo}) - ID ${idInscrito}`,
+            description: `Inscrição Retiro(${sexo}) - ID ${idInscrito}`,
             payment_method_id: 'pix',
-            payer: { 
-                email: emailPagador, 
-                first_name: nome.split(' ')[0], 
-                identification: { type: 'CPF', number: cpf.replace(/\D/g,'') } 
+            payer: {
+                email: emailPagador,
+                first_name: nome.split(' ')[0],
+                identification: { type: 'CPF', number: cpf.replace(/\D/g, '') }
             },
             external_reference: idInscrito.toString(),
-            // IMPORTANTE: Troque 'seu-app' pela URL real do Render quando tiver
             notification_url: `${process.env.BASE_URL_RENDER || 'https://inscricaoretiro2026.onrender.com'}/webhook/pagamento`
         };
 
         const requestOptions = { idempotencyKey: crypto.randomUUID() };
         const resultMP = await payment.create({ body, requestOptions });
-        
+
         const qrCodeCopiaCola = resultMP.point_of_interaction.transaction_data.qr_code;
         const qrCodeBase64 = resultMP.point_of_interaction.transaction_data.qr_code_base64;
         const mpId = resultMP.id.toString();
 
         // 3. Atualizar registro com dados do PIX
         await pool.query(
-            `UPDATE inscricoes SET mp_id = $1, qr_code = $2, qr_code_base64 = $3 WHERE id = $4`,
+            "UPDATE inscricoes SET mp_id = $1, qr_code = $2, qr_code_base64 = $3 WHERE id = $4",
             [mpId, qrCodeCopiaCola, qrCodeBase64, idInscrito]
         );
 
@@ -169,20 +168,19 @@ app.post('/webhook/pagamento', async (req, res) => {
 
     try {
         if (action === 'payment.created' || action === 'payment.updated') {
-             // Precisamos consultar a API para ter certeza do status
-             const payment = new Payment(client);
-             const infoPagamento = await payment.get({ id: data.id });
-             
-             const status = infoPagamento.status === 'approved' ? 'Pago' : 'Pendente';
-             const idInscrito = infoPagamento.external_reference;
+            const payment = new Payment(client);
+            const infoPagamento = await payment.get({ id: data.id });
 
-             if (idInscrito) {
-                 await pool.query(
-                     "UPDATE inscricoes SET status = $1 WHERE id = $2", 
-                     [status, idInscrito]
-                 );
-                 console.log(`✅ Inscrição ${idInscrito} atualizada para: ${status}`);
-             }
+            const status = infoPagamento.status === 'approved' ? 'Pago' : 'Pendente';
+            const idInscrito = infoPagamento.external_reference;
+
+            if (idInscrito) {
+                await pool.query(
+                    "UPDATE inscricoes SET status = $1 WHERE id = $2",
+                    [status, idInscrito]
+                );
+                console.log(`✅ Inscrição ${idInscrito} atualizada para: ${status}`);
+            }
         }
         res.status(200).send('OK');
     } catch (error) {
@@ -195,9 +193,9 @@ app.post('/webhook/pagamento', async (req, res) => {
 app.get('/api/check-status/:id', async (req, res) => {
     try {
         const result = await pool.query("SELECT status FROM inscricoes WHERE id = $1", [req.params.id]);
-        if(result.rows.length > 0) res.json({ status: result.rows[0].status });
+        if (result.rows.length > 0) res.json({ status: result.rows[0].status });
         else res.json({ status: 'Erro' });
-    } catch(e) { res.json({ status: 'Erro' }); }
+    } catch (e) { res.json({ status: 'Erro' }); }
 });
 
 // Página de Comprovante
@@ -212,19 +210,18 @@ app.get('/status/:id', async (req, res) => {
     }
 });
 
-// --- ADMIN (Refatorado para Async/Await) ---
+// --- ADMIN ---
 app.get('/admin', verificarAuth, async (req, res) => {
     const filtro = req.query.filtro;
     try {
         let sql = "SELECT * FROM inscricoes";
         let params = [];
-        if (filtro) { 
-            sql += " WHERE status = $1"; 
-            params.push(filtro); 
+        if (filtro) {
+            sql += " WHERE status = $1";
+            params.push(filtro);
         }
         sql += " ORDER BY id DESC";
 
-        // Executa todas as consultas em paralelo para ser mais rápido
         const [inscritosRes, galeriaRes, statsRes] = await Promise.all([
             pool.query(sql, params),
             pool.query("SELECT * FROM galeria ORDER BY id DESC"),
@@ -238,10 +235,10 @@ app.get('/admin', verificarAuth, async (req, res) => {
         const meninos = todos.filter(r => r.sexo === 'Masculino').length;
         const meninas = todos.filter(r => r.sexo === 'Feminino').length;
 
-        res.render('admin', { 
-            inscritos: inscritosRes.rows, 
-            galeria: galeriaRes.rows, 
-            total, pagos, pendentes, meninos, meninas, filtroAtual: filtro 
+        res.render('admin', {
+            inscritos: inscritosRes.rows,
+            galeria: galeriaRes.rows,
+            total, pagos, pendentes, meninos, meninas, filtroAtual: filtro
         });
 
     } catch (err) {
@@ -250,9 +247,33 @@ app.get('/admin', verificarAuth, async (req, res) => {
     }
 });
 
+// --- ROTA NOVA: ADICIONAR MANUALMENTE ---
+app.post('/admin/adicionar-manual', verificarAuth, async (req, res) => {
+    try {
+        // Recebe os dados do modal
+        let { nome, cpf, telefone, sexo, congregacao, valor_pago } = req.body;
+
+        // Trata o valor (troca virgula por ponto se houver)
+        if (valor_pago) valor_pago = valor_pago.replace(',', '.');
+
+        // Insere diretamente como 'Pago' e sem ID do MercadoPago
+        await pool.query(`
+            INSERT INTO inscricoes (nome, cpf, sexo, congregacao, telefone, valor_pago, status)
+            VALUES ($1, $2, $3, $4, $5, $6, 'Pago')
+        `, [nome, cpf, sexo, congregacao, telefone, valor_pago]);
+
+        console.log(`✅ Inscrição Manual criada para: ${nome}`);
+        res.redirect('/admin'); // Recarrega a página
+
+    } catch (err) {
+        console.error("Erro ao adicionar manual:", err);
+        res.send("Erro ao salvar inscrição manual. Verifique os dados.");
+    }
+});
+
 app.post('/admin/galeria/adicionar', verificarAuth, upload.single('arquivo'), async (req, res) => {
     if (!req.file) return res.redirect('/admin');
-    const url = '/uploads/' + req.file.filename; 
+    const url = '/uploads/' + req.file.filename;
     await pool.query("INSERT INTO galeria (tipo, url, titulo) VALUES ($1, $2, $3)", [req.body.tipo, url, req.body.titulo]);
     res.redirect('/admin');
 });
@@ -271,7 +292,7 @@ app.get('/admin/editar/:id', verificarAuth, async (req, res) => {
 app.post('/admin/editar/:id', verificarAuth, async (req, res) => {
     const { nome, cpf, sexo, congregacao, telefone, status } = req.body;
     await pool.query(
-        `UPDATE inscricoes SET nome=$1, cpf=$2, sexo=$3, congregacao=$4, telefone=$5, status=$6 WHERE id=$7`, 
+        "UPDATE inscricoes SET nome = $1, cpf = $2, sexo = $3, congregacao = $4, telefone = $5, status = $6 WHERE id = $7",
         [nome, cpf, sexo, congregacao, telefone, status, req.params.id]
     );
     res.redirect('/admin');
